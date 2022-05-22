@@ -9,7 +9,8 @@ from PIL import ImageTk, Image
 import os
 from io import BytesIO
 import pdb
-## TODO: ADD CONFIG FOR Lister name and ID and API TOKEN
+## TODO: ADD CONFIG FOR Lister name and ID and API TOKEN Cleanup Code
+## Once Committed Create a readme
 
 
 
@@ -19,17 +20,48 @@ LISTERS = {
     'Troy': '6112',
     'Mattison': '3183',
 }
-lister_names = ["Troy", "Mattisons"]
+lister_names = ["Troy", "Mattison"]
 year_list = ['2020', '2021', '2022']
 month_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12']
 
 
 TOTAL_SALES = []
-def return_sales(LISTER):
-    # do win.destroy() to destory the loading window once finished
-    print("FINAL GUI GOES HERE")
-    # display total sales TOTAL_SALES[0]
-    # display LISTER
+def return_sales(LISTER, DATE):
+    final= Tk()
+    final.title("Goodwill Sales Dashboard")
+    final.geometry("500x260")
+    final.minsize(500, 260)
+    final.maxsize(500, 260)
+    final.configure(background='#ffffff')
+    # Goodwill Icon
+    icon_url = "https://images.crowdspring.com/blog/wp-content/uploads/2010/08/27132550/goodwill-logo.jpg"
+    icon_response = requests.get(icon_url)
+    ico_data = icon_response.content
+    icon = ImageTk.PhotoImage(Image.open(BytesIO(ico_data)))
+
+    # Goodwill Logo
+    gwlogo_url = "https://p.kindpng.com/picc/s/224-2248260_goodwill-industries-hd-png-download.png"
+    gwlogo_response = requests.get(gwlogo_url)
+    gwlogo_data = gwlogo_response.content
+    gwlogo = ImageTk.PhotoImage(Image.open(BytesIO(gwlogo_data)))
+
+    gwLable = Label(image = gwlogo)
+    gwLable.place(x=0,y=0)
+
+    main_lab = Label(final, text="Goodwill Sales Dashboard" ,font=("Arial", 15))
+    main_lab.config(bg='#ffffff')
+    main_lab.place(x=40, y=30)
+
+    lister_lable = Label(final, text=DATE+' Sales for ' + LISTER ,font=("Arial", 15))
+    lister_lable.config(bg='#ffffff')
+    lister_lable.place(x=50, y=70)
+
+    Sales_lable = Label(final, text='$' + str(TOTAL_SALES[0]) ,font=("Arial", 15))
+    Sales_lable.config(bg='#ffffff')
+    Sales_lable.place(x=110, y=115)
+
+    final.iconphoto(False, icon)
+    final.mainloop()
     return
 
 def main(YEAR_MONTH, lister):
@@ -91,12 +123,8 @@ def main(YEAR_MONTH, lister):
     total_sales_month = sum(sales_per_page)
     t_sales_int = int(total_sales_month)
     TOTAL_SALES.append(t_sales_int)
-    return_sales(LISTER= lister)
+    return_sales(LISTER= lister, DATE = YEAR_MONTH)
     return
-# Some of these take a long time so add a gui saying processing
-#
-#pdb.set_trace()
-#print(TOTAL_SALES[0])
 
 ####################################################
 ################### Main GUI #######################
@@ -152,8 +180,9 @@ month.place(x=200,y=45)
 def search():
     yr = yearVar.get()
     mth = monthVar.get()
+    yr_mth =  yr + '-' + mth
     win.destroy()
-    main(YEAR_MONTH = yr + '-' + mth, lister = listerVar.get())
+    main(YEAR_MONTH = yr_mth, lister = listerVar.get())
     return
 # Query Data
 ttk.Button(win, text= "Search",width= 20, command= search ).pack(side = BOTTOM, pady = 10)
