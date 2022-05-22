@@ -8,11 +8,8 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import os
 from io import BytesIO
+import configparser
 import pdb
-## TODO: ADD CONFIG FOR Lister name and ID and API TOKEN Cleanup Code
-## Once Committed Create a readme
-
-
 
 # CONFIGS
 API_TOKEN = ''
