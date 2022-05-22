@@ -2,44 +2,51 @@ import requests
 import json
 import time
 import re
-
+import sys,socket
+from tkinter import *
+from tkinter import ttk
+from PIL import ImageTk, Image
+import os
+from io import BytesIO
 import pdb
+## TODO: ADD CONFIG FOR Lister name and ID and API TOKEN
 
-#pdb.set_trace()
-upright_api = 'https://app.uprightlabs.com/api/v2/products?page=1&per_page=500&sort=id.desc&user_id=6673'
-# products[x] for each prod
-# DATE FILTER
-YEAR_MONTH = '2022-05'
-lister = 'Alexander'
 
-MONTH_OF_SALES = []
 
+# CONFIGS
+API_TOKEN = ''
 LISTERS = {
-    'Alexander': '6673',
-    'EXA': '2351'
+    'Troy': '6112',
+    'Mattison': '3183',
 }
+lister_names = ["Troy", "Mattisons"]
+year_list = ['2020', '2021', '2022']
+month_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12']
 
-MAX_PAGES = []
-api_response = '' # This is where the api call is stored
-def lister_api(page):
 
-    id = LISTERS[lister]
-
-    response = requests.get(
-            'https://app.uprightlabs.com/api/v2/products?page=' + page + '&per_page=100&sort=id.desc&user_id=' + id)
-    # Gathers a specific listers listed products
-    json_response = response.json()
-    # search Meta for page number max if greater than 1 turn that number into an int and go through all pages
+TOTAL_SALES = []
+def return_sales(LISTER):
+    # do win.destroy() to destory the loading window once finished
+    print("FINAL GUI GOES HERE")
+    # display total sales TOTAL_SALES[0]
+    # display LISTER
     return
-def parsing():
-    USD_PER_SOLD_ITEM = []
-    # change to get with api response
-    page = ('C:\\Users\\Malachi\\Desktop\\gwSales\\products.json')
-    with open(page, encoding='utf8') as page:
-        page_data = json.load(page)
-        PRODUCT_LIST = page_data["products"]
 
-        #Month Filter
+def main(YEAR_MONTH, lister):
+    sales_per_page = [] # Sales Per Api request
+    MAX_PAGE = [] # Max Pages for lister
+    def sales(current_page):
+        id = LISTERS[lister] # Gets Lister And Lister ID
+
+        # Gathers a specific listers listed products
+        response = requests.get( # Upright API
+            'https://app.uprightlabs.com/api/v2/products?page=' + str(current_page) + '&per_page=100&sort=id.desc&user_id=' + id, headers={'X-Authorization': API_TOKEN})
+        json_response = response.json()
+
+        USD_PER_PAGE = []
+        API_CALL = json_response # Just Renaming API CALL
+        PRODUCT_LIST = API_CALL["products"] # Gets All Products
+        # Month Filter
         MONTH_PROD = []
         x=0
         while x < len(PRODUCT_LIST):
@@ -51,20 +58,105 @@ def parsing():
                     MONTH_PROD.append(Single_prod)
             x+=1
 
-        #Sold Filter
+        # Sold Filter
         for product in MONTH_PROD:
             PROD = product["product_listings"][0]
             if PROD['state'] == "SOLD":
-                USD_PER_SOLD_ITEM.append(float(PROD['current_price']))
+                USD_PER_PAGE.append(float(PROD['current_price']))
 
-        meta = page_data["meta"]
+        sales_per_page.append(sum(USD_PER_PAGE))
+        return
+    def page_filter():
+        id = LISTERS[lister]
+        response = requests.get('https://app.uprightlabs.com/api/v2/products?page=&per_page=100&sort=id.desc&user_id=' + id, headers={'X-Authorization': API_TOKEN})
+        # Gathers a specific listers listed products
+        json_response = response.json()
+
+        ##
+        ## Use this area to check if unauthed then run a tkinter window saying UNAUTHORIZED
+        ##
+        # search Meta for page number max if greater than 1 turn that number into an int and go through all pages
+        meta = json_response["meta"]
         max_pages = meta['max_pages']
+        MAX_PAGE.append(max_pages)
+        return
 
-        #PAGE FILTER
+    page_filter()
+    # Parse Through all pages of a lister
+    x = 1
+    while x <= MAX_PAGE[0]:
+        sales(current_page=x)
+        x+=1
 
-
-    MONTH_OF_SALES.append(sum(USD_PER_SOLD_ITEM))
+    total_sales_month = sum(sales_per_page)
+    t_sales_int = int(total_sales_month)
+    TOTAL_SALES.append(t_sales_int)
+    return_sales(LISTER= lister)
     return
-#lister_api(page='')
-parsing()
-time.sleep(10000)
+# Some of these take a long time so add a gui saying processing
+#
+#pdb.set_trace()
+#print(TOTAL_SALES[0])
+
+####################################################
+################### Main GUI #######################
+####################################################
+win= Tk()
+win.title("Goodwill Sales Dashboard")
+# Gui Window Config
+win.geometry("310x350")
+win.minsize(310, 350)
+win.maxsize(310, 350)
+win.configure(background='black')
+
+# Goodwill Icon
+icon_url = "https://images.crowdspring.com/blog/wp-content/uploads/2010/08/27132550/goodwill-logo.jpg"
+icon_response = requests.get(icon_url)
+ico_data = icon_response.content
+icon = ImageTk.PhotoImage(Image.open(BytesIO(ico_data)))
+
+# Goodwill Logo
+gwlogo_url = "https://www.goodwilldetroit.org/wp-content/uploads/2018/09/Goodwill_BusinessCards_NoBleed_P01-1-600x360.png"
+gwlogo_response = requests.get(gwlogo_url)
+gwlogo_data = gwlogo_response.content
+gwlogo = ImageTk.PhotoImage(Image.open(BytesIO(gwlogo_data)))
+
+gwLable = Label(image = gwlogo)
+gwLable.place(x=-150,y=0)
+
+main_lab = Label(win, text="Good Will Sales Dashboard",font=("Arial", 15))
+main_lab.config(bg="#0e4883")
+main_lab.place(x=30, y=10)
+
+# Lister Select
+listerVar = StringVar(win)
+listerVar.set('Lister Name') # Def Value
+lister = OptionMenu(win, listerVar, *lister_names)
+lister.config(bg="#ffffff")
+lister.place(x=20,y=45)
+
+
+# Year Select
+yearVar = StringVar(win)
+yearVar.set('Year') # Def Value
+year = OptionMenu(win, yearVar, *year_list)
+year.config(bg="#ffffff")
+year.place(x=130,y=45)
+
+# Month Select
+monthVar = StringVar(win)
+monthVar.set('Month') # Def Value
+month = OptionMenu(win, monthVar, *month_list)
+month.config(bg="#ffffff")
+month.place(x=200,y=45)
+def search():
+    yr = yearVar.get()
+    mth = monthVar.get()
+    win.destroy()
+    main(YEAR_MONTH = yr + '-' + mth, lister = listerVar.get())
+    return
+# Query Data
+ttk.Button(win, text= "Search",width= 20, command= search ).pack(side = BOTTOM, pady = 10)
+
+win.iconphoto(False, icon)
+win.mainloop()
