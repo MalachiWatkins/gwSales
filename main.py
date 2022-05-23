@@ -8,16 +8,54 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import os
 from io import BytesIO
-import configparser
-import pdb
 
 # CONFIGS
 API_TOKEN = ''
 LISTERS = {
-    'Troy': '6112',
+    'Alexander': '6673',
+    'Benjamin': '3646',
+    'Breanna': '5674',
+    'Dianne': '3173',
+    'Elizabeth': '5491',
+    'Emily': '6741',
+    'Gary': '3172',
+    'Jaden': '7048',
+    'Jay': '5712',
+    'Jenni': '5560',
+    'jilian': '6308',
+    'jillissa': '6965',
+    'joshua': '6542',
+    'kara': '5318',
+    'keisha': '3404',
+    'Kimberly': '5243',
+    'Kristen': '4909',
+    'Kylie': '5785',
+    'LaDonna': '5877',
+    'Lanny': '4970',
+    'Larisa': '5711',
+    'Liam': '3184',
+    'Macoy': '6631',
+    'Malachi': '6641',
     'Mattison': '3183',
+    'Mark': '3171',
+    'Nathan': '4056',
+    'Oliver': '6082',
+    'Paul': '5262',
+    'Renae': '6782',
+    'Rhonda': '6541',
+    'Shanon': '6119',
+    'Shawn': '4055',
+    'Tami': '3680',
+    'Tiffany': '7047',
+    'Traci': '6111',
+    'Trent': '3290',
+    'Troy': '6112',
 }
-lister_names = ["Troy", "Mattison"]
+
+
+
+lister_names = ['Alexander', 'Benjamin', 'Breanna', 'Dianne', 'Elizabeth', 'Emily', 'Gary', 'Jaden', 'Jay', 'Jenni', 'jilian', 'jillissa', 'joshua', 'kara', 'keisha', 'Kimberly', 'Kristen', 'Kylie', 'LaDonna', 'Lanny', 'Larisa', 'Liam', 'Macoy', 'Malachi',
+'Mattison', 'Mark', 'Nathan', 'Oliver', 'Paul', 'Renae', 'Rhonda', 'Shanon', 'Shawn', 'Tami', 'Tiffany', 'Traci', 'Trent', 'Troy']
 year_list = ['2020', '2021', '2022']
 month_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12']
 
