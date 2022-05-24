@@ -8,6 +8,14 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import os
 from io import BytesIO
+from tkinter import messagebox
+
+## To Do
+# Ok so no loading screen spent too much time tkinter dont like opening multi windows and closing only one wit this setup
+# give Total Sales Stat and add room too on return sales GUI
+# add buttons and space for processors if processor selected
+# Add processor sales # Same Princible Diffrent api call same api key
+
 
 # CONFIGS
 API_TOKEN = ''
@@ -61,6 +69,7 @@ month_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '
 
 
 TOTAL_SALES = []
+
 def return_sales(LISTER, DATE):
     final= Tk()
     final.title("Goodwill Sales Dashboard")
@@ -95,14 +104,17 @@ def return_sales(LISTER, DATE):
     Sales_lable.config(bg='#ffffff')
     Sales_lable.place(x=110, y=115)
 
-    final.iconphoto(False, icon)
+    #final.iconphoto(False, icon)
     final.mainloop()
     return
 
 def main(YEAR_MONTH, lister):
+    messagebox.showinfo("showinfo", "Query Started")
+
     sales_per_page = [] # Sales Per Api request
     MAX_PAGE = [] # Max Pages for lister
     def sales(current_page):
+
         id = LISTERS[lister] # Gets Lister And Lister ID
 
         # Gathers a specific listers listed products
@@ -143,6 +155,7 @@ def main(YEAR_MONTH, lister):
         ## Use this area to check if unauthed then run a tkinter window saying UNAUTHORIZED
         ##
         # search Meta for page number max if greater than 1 turn that number into an int and go through all pages
+
         meta = json_response["meta"]
         max_pages = meta['max_pages']
         MAX_PAGE.append(max_pages)
@@ -150,6 +163,7 @@ def main(YEAR_MONTH, lister):
 
     page_filter()
     # Parse Through all pages of a lister
+    messagebox.showinfo("showinfo", "Searching Listers Sold Items !!This will take time!!")
     x = 1
     while x <= MAX_PAGE[0]:
         sales(current_page=x)
@@ -158,6 +172,8 @@ def main(YEAR_MONTH, lister):
     total_sales_month = sum(sales_per_page)
     t_sales_int = int(total_sales_month)
     TOTAL_SALES.append(t_sales_int)
+    messagebox.showinfo("showinfo", "Query Complete")
+    win.destroy()
     return_sales(LISTER= lister, DATE = YEAR_MONTH)
     return
 
@@ -216,8 +232,9 @@ def search():
     yr = yearVar.get()
     mth = monthVar.get()
     yr_mth =  yr + '-' + mth
-    win.destroy()
     main(YEAR_MONTH = yr_mth, lister = listerVar.get())
+
+
     return
 # Query Data
 ttk.Button(win, text= "Search",width= 20, command= search ).pack(side = BOTTOM, pady = 10)
